@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'userManagement.apps.UsermanagementConfig',
+    'import_export',
 ]
 
 MIDDLEWARE = [

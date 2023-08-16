@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 # Create your views here.
+def indexfunc(request):
+    return render(request, 'index.html', {})
+
 def signupfunc(request):
     user2 = User.objects.all()
     print(user2)

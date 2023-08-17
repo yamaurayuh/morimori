@@ -272,7 +272,7 @@
       <div>
         
         <form action="{% url 'userManagement:home' %}" method="post">{% csrf_token %}
-          食材：<input type="text" autocomplete="on" list="select_bank" name="banks" value="{{ item.name }}">
+          食材：<input type="text" autocomplete="on" list="select_bank" name="addName" value="{{ item.name }}">
           <datalist id="select_bank">
           {% for item in object_list %}
           <option value="{{ item.name }}">
@@ -329,13 +329,25 @@
             {% for time, detail in recipe.items %}
               {% if time == 'lunch' %}
                 {% for name, amout in detail.items %}
-                  {{ name }}
+                  {{ name }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  {{ amout }}
+            {% for time, detail in recipe.items %}
+              {% if time == 'lunch' %}
+                {% for name, amout in detail.items %}
+                  {{ amout }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  g
+            {% for time, detail in recipe.items %}
+              {% if time == 'lunch' %}
+                {% for name, amout in detail.items %}
+                  g<br>
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -346,13 +358,25 @@
             {% for time, detail in recipe.items %}
               {% if time == 'dinner' %}
                 {% for name, amout in detail.items %}
-                  {{ name }}
+                  {{ name }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  {{ amout }}
+            {% for time, detail in recipe.items %}
+              {% if time == 'dinner' %}
+                {% for name, amout in detail.items %}
+                  {{ amout }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  g
+            {% for time, detail in recipe.items %}
+              {% if time == 'dinner' %}
+                {% for name, amout in detail.items %}
+                  g<br>
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -363,13 +387,25 @@
             {% for time, detail in recipe.items %}
               {% if time == 'snack' %}
                 {% for name, amout in detail.items %}
-                  {{ name }}
+                  {{ name }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  {{ amout }}
+            {% for time, detail in recipe.items %}
+              {% if time == 'snack' %}
+                {% for name, amout in detail.items %}
+                  {{ amout }}<br>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
           </td>
           <td>
-                  g
+            {% for time, detail in recipe.items %}
+              {% if time == 'snack' %}
+                {% for name, amout in detail.items %}
+                  g<br>
                 {% endfor %}
               {% endif %}
             {% endfor %}

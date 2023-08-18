@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .models import NutritionFacts
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def indexfunc(request):
@@ -18,7 +19,8 @@ def signupfunc(request):
             return render(request, 'signup.html', {'error':'このユーザーは登録されています'})
         except:
             user = User.objects.create_user(username2, "", password2)
-    return render(request, 'login.html')
+            return redirect('login')
+    return render(request, 'signup.html')
 
 def loginfunc(request):
     if request.method == 'POST':
@@ -29,15 +31,14 @@ def loginfunc(request):
         if user is not None:
             login(request, user)
             # Redirect to a success page.
-            print("login->home")
-            return render(request, 'home.html')
-            # return redirect('home')
+            return redirect('home')
         else:
             # Return an 'invalid login' error message.
             return redirect('login')
     else:
         return render(request, 'login.html')
-    
+
+@login_required
 def homefunc(request):
     # 成分表の全データ
     print(request.session.get('object_list'))
@@ -62,35 +63,6 @@ def homefunc(request):
         request.session['recipe'] = recipe
         
         # 栄養データ用変数
-        # nutrition = request.session.get('nutrition')
-        # if nutrition is None:
-        #     nutrition = {
-        #         "energyCal":0.0,
-        #         "protein":0.0,
-        #         "lipid":0.0,
-        #         "foodFiberTotal":0.0,
-        #         "calcium":0.0,
-        #         "iron":0.0,
-        #         "vitaminA":0.0,
-        #         "vitaminB1":0.0,
-        #         "vitaminB2":0.0,
-        #         "vitaminC":0.0,
-        #         "salt":0.0,
-        #     }
-        #     request.session['nutrition'] = nutrition
-
-        # energyCal       = float(request.session.get('nutrition')['energyCal'])
-        # protein         = float(request.session.get('nutrition')['protein'])
-        # lipid           = float(request.session.get('nutrition')['lipid'])
-        # foodFiberTotal  = float(request.session.get('nutrition')['foodFiberTotal'])
-        # calcium         = float(request.session.get('nutrition')['calcium'])
-        # iron            = float(request.session.get('nutrition')['iron'])
-        # vitaminA        = float(request.session.get('nutrition')['vitaminA'])
-        # vitaminB1       = float(request.session.get('nutrition')['vitaminB1'])
-        # vitaminB2       = float(request.session.get('nutrition')['vitaminB2'])
-        # vitaminC        = float(request.session.get('nutrition')['vitaminC'])
-        # salt            = float(request.session.get('nutrition')['salt'])
-
         energyCal       = 0.0
         protein         = 0.0
         lipid           = 0.0
@@ -110,8 +82,6 @@ def homefunc(request):
                 result = NutritionFacts.objects.filter(name=name)\
                     .values("energyCal","protein","lipid","foodFiberTotal","calcium","iron",
                         "vitaminA","vitaminB1","vitaminB2","vitaminC","salt",)
-                print(name)
-                print(energyCal)
                 print(float(result[0].get('energyCal') * float( amout/ 100)))
                 energyCal       += float(result[0].get('energyCal') * float(amout / 100))
                 protein         += float(result[0].get('protein') * float(amout / 100))
@@ -124,7 +94,6 @@ def homefunc(request):
                 vitaminB2       += float(result[0].get('vitaminB2') * float(amout / 100))
                 vitaminC        += float(result[0].get('vitaminC') * float(amout / 100))
                 salt            += float(result[0].get('salt') * float(amout / 100))
-                print(energyCal)
 
         # 返却用：栄養データ作成
         nutrition = {
@@ -140,8 +109,11 @@ def homefunc(request):
             "vitaminC":'{:.2f}'.format(vitaminC),
             "salt":'{:.2f}'.format(salt),
         }
-        # request.session['nutrition'] = nutrition
 
         # 返却用コンテキスト
         context.update({"nutrition":nutrition, "recipe":recipe})
     return render(request, 'home.html', context)
+
+@login_required
+def accountfunc(request):
+    return render(request, 'account.html')

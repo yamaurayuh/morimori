@@ -159,7 +159,7 @@
 <body>
   <main>
     <header class="p-3 text-bg-dark">
-      <div class="container">
+      <div class="container"></div>
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
           <a href="{% url 'home' %}"
             class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
@@ -182,16 +182,14 @@
           <div class="text-end">
             <!-- <button type="button" class="btn btn-outline-light me-2">Login</button>
                 <button type="button" class="btn btn-warning">Sign-up</button> -->
-            <a href="{% url 'account' %}" class="btn btn-outline-primary me-2">{{ user.username }}</a>
+            <a href="{% url 'account' %}" class="btn btn-primary">{{ user.username }}</a>
 
           </div>
         </div>
       </div>
     </header>
     <div class="b-example-divider"></div>
-    <div class="container">
-      <div>
-
+      <div class="container">
         <form action="{% url 'home' %}" method="post">{% csrf_token %}
           食材：<input type="text" autocomplete="on" list="select_bank" name="addName" value="{{ item.name }}">
           <datalist id="select_bank">
@@ -212,251 +210,250 @@
           <br>
           <input type="submit" value="add">
         </form>
+        <br><br>
+        <table border="1" class="recipetable">
+          <tr>
+            <th>時間</th>
+            <th>食材</th>
+            <th>数量</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>朝食</td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'breakfast' %}
+              {% for name, amout in detail.items %}
+              {{ name }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'breakfast' %}
+              {% for name, amout in detail.items %}
+              {{ amout }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'breakfast' %}
+              {% for name, amout in detail.items %}
+              g<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>昼食</td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'lunch' %}
+              {% for name, amout in detail.items %}
+              {{ name }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'lunch' %}
+              {% for name, amout in detail.items %}
+              {{ amout }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'lunch' %}
+              {% for name, amout in detail.items %}
+              g<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>夕食</td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'dinner' %}
+              {% for name, amout in detail.items %}
+              {{ name }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'dinner' %}
+              {% for name, amout in detail.items %}
+              {{ amout }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'dinner' %}
+              {% for name, amout in detail.items %}
+              g<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+          <tr>
+            <td>間食</td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'snack' %}
+              {% for name, amout in detail.items %}
+              {{ name }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'snack' %}
+              {% for name, amout in detail.items %}
+              {{ amout }}<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for time, detail in recipe.items %}
+              {% if time == 'snack' %}
+              {% for name, amout in detail.items %}
+              g<br>
+              {% endfor %}
+              {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        </table>
+        <br><br>
+        <table border="1" class="nutritiontable" id="table_01">
+          <tr>
+            <th>栄養素</th>
+            <th>摂取量</th>
+            <th></th>
+            <th>目標量</th>
+            <th></th>
+            <th>未達成量</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>エネルギー</td>
+            <td>{{nutrition.energyCal}}</td>
+            <td>kcal</td>
+            <td>900</td>
+            <td>kcal</td>
+            <td class="disparity" tyle="border-right: none;"></td>
+            <td>kcal</td>
+          </tr>
+          <tr>
+            <td>たんぱく質</td>
+            <td>{{nutrition.protein}}</td>
+            <td>g</td>
+            <td>20</td>
+            <td>g</td>
+            <td class="disparity"></td>
+            <td>g</td>
+          </tr>
+          <tr>
+            <td>脂質</td>
+            <td>{{nutrition.lipid}}</td>
+            <td>g</td>
+            <td>20~30</td>
+            <td>g</td>
+            <td class="disparity"></td>
+            <td>g</td>
+          </tr>
+          <tr>
+            <td>食物繊維総量</td>
+            <td>{{nutrition.foodFiberTotal}}</td>
+            <td>g</td>
+            <td>-</td>
+            <td>g
+            <td class="disparity"></td>
+            <td>g</td>
+          </tr>
+          <tr>
+            <td>カルシウム</td>
+            <td>{{nutrition.calcium}}</td>
+            <td>mg</td>
+            <td>400</td>
+            <td>mg</td>
+            <td class="disparity"></td>
+            <td>mg</td>
+          </tr>
+          <tr>
+            <td>鉄</td>
+            <td>{{nutrition.iron}}</td>
+            <td>mg</td>
+            <td>4.5</td>
+            <td>mg</td>
+            <td class="disparity"></td>
+            <td>mg</td>
+          </tr>
+          <tr>
+            <td>ビタミンA（レチノール活性当量）</td>
+            <td>{{nutrition.vitaminA}}</td>
+            <td>μg</td>
+            <td>350</td>
+            <td>μg</td>
+            <td class="disparity"></td>
+            <td>μg</td>
+          </tr>
+          <tr>
+            <td>ビタミンB1</td>
+            <td>{{nutrition.vitaminB1}}</td>
+            <td>mg</td>
+            <td>0.5</td>
+            <td>mg</td>
+            <td class="disparity"></td>
+            <td>mg</td>
+          </tr>
+          <tr>
+            <td>ビタミンB2</td>
+            <td>{{nutrition.vitaminB2}}</td>
+            <td>mg</td>
+            <td>0.5</td>
+            <td>mg</td>
+            <td class="disparity"></td>
+            <td>mg</td>
+          </tr>
+          <tr>
+            <td>ビタミンC</td>
+            <td>{{nutrition.vitaminC}}</td>
+            <td>mg</td>
+            <td>35</td>
+            <td>mg</td>
+            <td class="disparity"></td>
+            <td>mg</td>
+          </tr>
+          <tr>
+            <td>食塩相当量</td>
+            <td>{{nutrition.salt}}</td>
+            <td>g</td>
+            <td>3.0</td>
+            <td>g未満</td>
+            <td class="disparity"></td>
+            <td>g未満</td>
+          </tr>
+        </table>
       </div>
-      <br><br>
-      <table border="1" class="recipetable">
-        <tr>
-          <th>時間</th>
-          <th>食材</th>
-          <th>数量</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>朝食</td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'breakfast' %}
-            {% for name, amout in detail.items %}
-            {{ name }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'breakfast' %}
-            {% for name, amout in detail.items %}
-            {{ amout }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'breakfast' %}
-            {% for name, amout in detail.items %}
-            g<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-          <td>昼食</td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'lunch' %}
-            {% for name, amout in detail.items %}
-            {{ name }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'lunch' %}
-            {% for name, amout in detail.items %}
-            {{ amout }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'lunch' %}
-            {% for name, amout in detail.items %}
-            g<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-          <td>夕食</td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'dinner' %}
-            {% for name, amout in detail.items %}
-            {{ name }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'dinner' %}
-            {% for name, amout in detail.items %}
-            {{ amout }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'dinner' %}
-            {% for name, amout in detail.items %}
-            g<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-          <td>間食</td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'snack' %}
-            {% for name, amout in detail.items %}
-            {{ name }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'snack' %}
-            {% for name, amout in detail.items %}
-            {{ amout }}<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-          <td>
-            {% for time, detail in recipe.items %}
-            {% if time == 'snack' %}
-            {% for name, amout in detail.items %}
-            g<br>
-            {% endfor %}
-            {% endif %}
-            {% endfor %}
-          </td>
-        </tr>
-      </table>
-      <br><br>
-      <table border="1" class="nutritiontable" id="table_01">
-        <tr>
-          <th>栄養素</th>
-          <th>摂取量</th>
-          <th></th>
-          <th>目標量</th>
-          <th></th>
-          <th>未達成量</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>エネルギー</td>
-          <td>{{nutrition.energyCal}}</td>
-          <td>kcal</td>
-          <td>900</td>
-          <td>kcal</td>
-          <td class="disparity" tyle="border-right: none;"></td>
-          <td>kcal</td>
-        </tr>
-        <tr>
-          <td>たんぱく質</td>
-          <td>{{nutrition.protein}}</td>
-          <td>g</td>
-          <td>20</td>
-          <td>g</td>
-          <td class="disparity"></td>
-          <td>g</td>
-        </tr>
-        <tr>
-          <td>脂質</td>
-          <td>{{nutrition.lipid}}</td>
-          <td>g</td>
-          <td>20~30</td>
-          <td>g</td>
-          <td class="disparity"></td>
-          <td>g</td>
-        </tr>
-        <tr>
-          <td>食物繊維総量</td>
-          <td>{{nutrition.foodFiberTotal}}</td>
-          <td>g</td>
-          <td>-</td>
-          <td>g
-          <td class="disparity"></td>
-          <td>g</td>
-        </tr>
-        <tr>
-          <td>カルシウム</td>
-          <td>{{nutrition.calcium}}</td>
-          <td>mg</td>
-          <td>400</td>
-          <td>mg</td>
-          <td class="disparity"></td>
-          <td>mg</td>
-        </tr>
-        <tr>
-          <td>鉄</td>
-          <td>{{nutrition.iron}}</td>
-          <td>mg</td>
-          <td>4.5</td>
-          <td>mg</td>
-          <td class="disparity"></td>
-          <td>mg</td>
-        </tr>
-        <tr>
-          <td>ビタミンA（レチノール活性当量）</td>
-          <td>{{nutrition.vitaminA}}</td>
-          <td>μg</td>
-          <td>350</td>
-          <td>μg</td>
-          <td class="disparity"></td>
-          <td>μg</td>
-        </tr>
-        <tr>
-          <td>ビタミンB1</td>
-          <td>{{nutrition.vitaminB1}}</td>
-          <td>mg</td>
-          <td>0.5</td>
-          <td>mg</td>
-          <td class="disparity"></td>
-          <td>mg</td>
-        </tr>
-        <tr>
-          <td>ビタミンB2</td>
-          <td>{{nutrition.vitaminB2}}</td>
-          <td>mg</td>
-          <td>0.5</td>
-          <td>mg</td>
-          <td class="disparity"></td>
-          <td>mg</td>
-        </tr>
-        <tr>
-          <td>ビタミンC</td>
-          <td>{{nutrition.vitaminC}}</td>
-          <td>mg</td>
-          <td>35</td>
-          <td>mg</td>
-          <td class="disparity"></td>
-          <td>mg</td>
-        </tr>
-        <tr>
-          <td>食塩相当量</td>
-          <td>{{nutrition.salt}}</td>
-          <td>g</td>
-          <td>3.0</td>
-          <td>g未満</td>
-          <td class="disparity"></td>
-          <td>g未満</td>
-        </tr>
-      </table>
     </div>
+  </div>
   </main>
-  <script src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-    crossorigin="anonymous"></script>
+  <div class="b-example-divider"></div>
 </body>
 {% endblock content %}

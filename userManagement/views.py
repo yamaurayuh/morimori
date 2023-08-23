@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from .models import NutritionFacts
 from django.contrib.auth.decorators import login_required
 
@@ -10,7 +10,6 @@ def indexfunc(request):
 
 def signupfunc(request):
     user2 = User.objects.all()
-    print(user2)
     if request.method == 'POST':
         username2 = request.POST['username']
         password2 = request.POST['password']
@@ -24,14 +23,13 @@ def signupfunc(request):
 
 def loginfunc(request):
     if request.method == 'POST':
-        print("login post now")
         username2 = request.POST["username"]
         password2 = request.POST["password"]
         user = authenticate(request, username=username2, password=password2)
         if user is not None:
             login(request, user)
             # Redirect to a success page.
-            return redirect('home')
+            return redirect('daily')
         else:
             # Return an 'invalid login' error message.
             return redirect('login')
@@ -39,27 +37,41 @@ def loginfunc(request):
         return render(request, 'login.html')
 
 @login_required
-def homefunc(request):
+def logoutfunc(request):
+    logout(request)
+    return redirect('login')
+
+
+@login_required
+def displayDailyIngredientRecordFunc(request):
+
+    print('★★★ingredientRecordUpdateFunc★★★')
+    print(request.POST)
     # 成分表の全データ
-    print(request.session.get('object_list'))
-    if request.session.get('object_list') is None:
-        context = {'object_list':NutritionFacts.objects.all()}
+    context = {'object_list':NutritionFacts.objects.all()}
+    if request.session.get('recipe') is None:
+        request.session['recipe'] = {'breakfast':{},'lunch':{},'dinner':{},'snack':{}}
+    context.update({'recipe':request.session.get('recipe')})
     if request.method == 'POST':
-        # 時間
-        time = request.POST.get('time')
-        # 食材名
-        name = request.POST.get('addName')
-        # 数量
-        amout = int(request.POST.get('amount'))
-        
         # 返却用：食材と数量のデータ作成
         recipe = request.session.get('recipe')
-        if recipe is None:
-            recipe = ({time:{name:amout}})
-        elif recipe.get(time) is None:
-            recipe.update({time:{name:amout}})
+
+        # 時間
+        getTime = request.POST.get('time')
+        # 食材名
+        getName = request.POST.get('addName')
+        
+        # 食材追加処理
+        if request.POST.get('del_name') is None:
+            # 数量
+            getAmount = int(request.POST.get('amount'))
+            recipe[getTime].update({getName:getAmount})
+        # 食材削除処理
         else:
-            recipe[time].update({name:amout})
+            getDelName = request.POST.get('del_name')
+            getDelTime = request.POST.get('del_time')
+            recipe[getDelTime].pop(getDelName, None)
+
         request.session['recipe'] = recipe
         
         # 栄養データ用変数
@@ -74,7 +86,7 @@ def homefunc(request):
         vitaminB2       = 0.0
         vitaminC        = 0.0
         salt            = 0.0
-    
+
         # レシピに入れた栄養データの計算
         for time in recipe.keys():
             for name, amout in recipe[time].items():
@@ -82,7 +94,6 @@ def homefunc(request):
                 result = NutritionFacts.objects.filter(name=name)\
                     .values("energyCal","protein","lipid","foodFiberTotal","calcium","iron",
                         "vitaminA","vitaminB1","vitaminB2","vitaminC","salt",)
-                print(float(result[0].get('energyCal') * float( amout/ 100)))
                 energyCal       += float(result[0].get('energyCal') * float(amout / 100))
                 protein         += float(result[0].get('protein') * float(amout / 100))
                 lipid           += float(result[0].get('lipid') * float(amout / 100))
@@ -110,9 +121,11 @@ def homefunc(request):
             "salt":'{:.2f}'.format(salt),
         }
 
-        # 返却用コンテキスト
+        request.session['nutrition'] = nutrition
+
+        # 返却用コンテキス
         context.update({"nutrition":nutrition, "recipe":recipe})
-    return render(request, 'home.html', context)
+    return render(request, 'displayDailyIngredientRecord.html', context)
 
 @login_required
 def accountfunc(request):

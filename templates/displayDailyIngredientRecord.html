@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .nutritiontable td:nth-of-type(2),
+    .nutritiontable td:nth-of-type(4),
+    .nutritiontable td:nth-of-type(6) {
+        text-align: right;
+    }
+</style>
+<script type="text/javascript">
+    window.onload = function () {
+        var tableElem = document.getElementById('table_01');
+        var rowElems = tableElem.rows;
+        var price = 0;
+        for (i = 1, len = rowElems.length; i < len; i++) {
+            var goalText = rowElems[i].cells[3].innerText;
+            var disparity = 0;
+            console.log(goalText);
+            if (goalText.indexOf('~') != -1) {
+                var upper = parseFloat(goalText.slice(goalText.indexOf('~') + 1));
+                var lower = parseFloat(goalText.slice(0, goalText.indexOf('~')));
+                disparity = parseFloat(rowElems[i].cells[1].innerText - (upper + lower) / 2).toFixed(2);
+            }
+            else if (goalText == '-') {
+                disparity = goalText;
+            }
+            else {
+                disparity = parseFloat(rowElems[i].cells[1].innerText - rowElems[i].cells[3].innerText).toFixed(2);
+            }
+            rowElems[i].cells[5].innerText = disparity;
+        }
+    }
+</script>
+<h1>{{day}}の食材記録</h1>
+<a href="{% url 'logout' %}">logout</a>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% for time,detail in recipe.items %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 5%">
+                            <h2>
+                                {% if time == 'breakfast' %}
+                                朝食
+                                {% elif time == 'lunch' %}
+                                昼食
+                                {% elif time == 'dinner' %}
+                                夕食
+                                {% elif time == 'snack' %}
+                                間食
+                                {% endif %}
+                            </h2>
+                        </th>
+                        <th scope="col" style="width: 20%">名前</th>
+                        <th scope="col" style="width: 10%">数量</th>
+                    </tr>
+                </thead>
+                {% for name, amount in detail.items %}
+                <tbody>
+                    <tr>
+                        <td><a type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#delete-Modal-{{ name }}{{ time }}">削除</a></td>
+                        <!-- モーダルウィンドウ：食材の削除 -->
+                        <div class="modal fade" id="delete-Modal-{{ name }}{{ time }}" data-bs-backdrop="static"
+                            tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">食材の削除</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h5>
+                                            {% if time == 'breakfast' %}
+                                            朝食
+                                            {% elif time == 'lunch' %}
+                                            昼食
+                                            {% elif time == 'dinner' %}
+                                            夕食
+                                            {% elif time == 'snack' %}
+                                            間食
+                                            {% endif %}
+                                        </h5>
+                                        <br>
+                                        <h3>{{ name }}</h3>
+                                        <br>
+                                        を削除します。
+                                        <div class="modal-footer">
+                                            <form method='POST' action="{% url 'daily' %}">{% csrf_token %}
+                                                <input type="hidden" name="del_name" value="{{ name }}">
+                                                <input type="hidden" name="del_time" value="{{ time }}">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">キャンセル</button>
+                                                <button type="submit" class="btn btn-primary">削除</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <td>{{ name }}</td>
+                            <td>{{ amount }} g</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                data-bs-target="#add-ingredient-{{ time }}" style="border: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-plus-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                </svg></button></td>
+            <br><br>
+            <!-- モーダルウィンドウ：食材の追加 -->
+            <div class="modal fade" id="add-ingredient-{{ time }}" data-bs-backdrop="static" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">食材の追加</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{% url 'daily' %}" method="post">{% csrf_token %}
+                                <h3>時間 :
+                                    {% if time == 'breakfast' %}朝食
+                                    {% elif time == 'lunch' %}昼食
+                                    {% elif time == 'dinner' %}夕食
+                                    {% elif time == 'snack' %}間食
+                                    {% endif %}
+                                </h3>
+                                <input type="hidden" name="time" value="{{ time }}">
+                                <br>
+                                <h3>食材：<input type="text" autocomplete="on" list="select_bank" name="addName"
+                                        value="{{ item.name }}">
+                                    <datalist id="select_bank">
+                                        {% for item in object_list %}
+                                        <option value="{{ item.name }}">
+                                            {% endfor %}
+                                    </datalist>
+                                </h3>
+                                <br>
+                                <h3>数量：<input name="amount" type="number" value="100" class="hoge"> g</h3>
+                                <br>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">追加</button>
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">キャンセル</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            {% endfor %}
+        </div>
+        <div class="col">
+            <h2>栄養素</h2>
+            <table class="table table-hover nutritiontable" id="table_01">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 25%">栄養素</th>
+                        <th scope="col" style="width: 15%">摂取量</th>
+                        <th scope="col" style="width: 10%"></th>
+                        <th scope="col" style="width: 15%">目標量</th>
+                        <th scope="col" style="width: 10%"></th>
+                        <th scope="col" style="width: 15%">未達成量</th>
+                        <th scope="col" style="width: 10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>エネルギー</td>
+                        <td>{{nutrition.energyCal}}</td>
+                        <td>kcal</td>
+                        <td>900</td>
+                        <td>kcal</td>
+                        <td class="disparity" tyle="border-right: none;"></td>
+                        <td>kcal</td>
+                    </tr>
+                    <tr>
+                        <td>たんぱく質</td>
+                        <td>{{nutrition.protein}}</td>
+                        <td>g</td>
+                        <td>20</td>
+                        <td>g</td>
+                        <td class="disparity"></td>
+                        <td>g</td>
+                    </tr>
+                    <tr>
+                        <td>脂質</td>
+                        <td>{{nutrition.lipid}}</td>
+                        <td>g</td>
+                        <td>20~30</td>
+                        <td>g</td>
+                        <td class="disparity"></td>
+                        <td>g</td>
+                    </tr>
+                    <tr>
+                        <td>食物繊維総量</td>
+                        <td>{{nutrition.foodFiberTotal}}</td>
+                        <td>g</td>
+                        <td>-</td>
+                        <td>g
+                        <td class="disparity"></td>
+                        <td>g</td>
+                    </tr>
+                    <tr>
+                        <td>カルシウム</td>
+                        <td>{{nutrition.calcium}}</td>
+                        <td>mg</td>
+                        <td>400</td>
+                        <td>mg</td>
+                        <td class="disparity"></td>
+                        <td>mg</td>
+                    </tr>
+                    <tr>
+                        <td>鉄</td>
+                        <td>{{nutrition.iron}}</td>
+                        <td>mg</td>
+                        <td>4.5</td>
+                        <td>mg</td>
+                        <td class="disparity"></td>
+                        <td>mg</td>
+                    </tr>
+                    <tr>
+                        <td>ビタミンA</td>
+                        <td>{{nutrition.vitaminA}}</td>
+                        <td>μg</td>
+                        <td>350</td>
+                        <td>μg</td>
+                        <td class="disparity"></td>
+                        <td>μg</td>
+                    </tr>
+                    <tr>
+                        <td>ビタミンB1</td>
+                        <td>{{nutrition.vitaminB1}}</td>
+                        <td>mg</td>
+                        <td>0.5</td>
+                        <td>mg</td>
+                        <td class="disparity"></td>
+                        <td>mg</td>
+                    </tr>
+                    <tr>
+                        <td>ビタミンB2</td>
+                        <td>{{nutrition.vitaminB2}}</td>
+                        <td>mg</td>
+                        <td>0.5</td>
+                        <td>mg</td>
+                        <td class="disparity"></td>
+                        <td>mg</td>
+                    </tr>
+                    <tr>
+                        <td>ビタミンC</td>
+                        <td>{{nutrition.vitaminC}}</td>
+                        <td>mg</td>
+                        <td>35</td>
+                        <td>mg</td>
+                        <td class="disparity"></td>
+                        <td>mg</td>
+                    </tr>
+                    <tr>
+                        <td>食塩相当量</td>
+                        <td>{{nutrition.salt}}</td>
+                        <td>g</td>
+                        <td>3.0</td>
+                        <td>g未満</td>
+                        <td class="disparity"></td>
+                        <td>g未満</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <input type="text" placeholder="コメント">
+    </div>
+    <br>
+    <div class="row">
+        <button type="submit" class="btn btn-primary">AIレシピ提案</button>
+    </div>
+</div>
+
+{% endblock %}

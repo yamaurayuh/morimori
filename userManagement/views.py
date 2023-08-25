@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from .models import NutritionFacts
+from .models import NutritionFacts, mealRecord
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -42,16 +42,23 @@ def logoutfunc(request):
     return redirect('login')
 
 
-@login_required
-def displayDailyIngredientRecordFunc(request):
+# @login_required
+# def dailyFunc(request, pk):
+def dailyFunc(request):
+    # print('★★★dailyFunc★★★')
+    # if request.POST.get('update') is not None:
+    #     model = get_object_or_404(mealRecord, pk=pk)
+    #     mealRecord.objects.update_or_create(pk=pk, defaults={"user":username, "day":person, "breakfast":breakfast,
+    #                                                         "lunch":lunch, "dinner":dinner, "snack":snack})
+    #     return redirect('list')
 
-    print('★★★ingredientRecordUpdateFunc★★★')
-    print(request.POST)
+    # print(request.POST)
     # 成分表の全データ
-    context = {'object_list':NutritionFacts.objects.all()}
+    context = {'object_list' : NutritionFacts.objects.all()}
     if request.session.get('recipe') is None:
         request.session['recipe'] = {'breakfast':{},'lunch':{},'dinner':{},'snack':{}}
     context.update({'recipe':request.session.get('recipe')})
+
     if request.method == 'POST':
         # 返却用：食材と数量のデータ作成
         recipe = request.session.get('recipe')
@@ -125,8 +132,21 @@ def displayDailyIngredientRecordFunc(request):
 
         # 返却用コンテキス
         context.update({"nutrition":nutrition, "recipe":recipe})
-    return render(request, 'displayDailyIngredientRecord.html', context)
+    return render(request, 'dailyMeal.html', context)
 
-@login_required
+def listFunc(request):
+    # meal = mealRecord.objects.filter(user=User.username)
+    contexts = {}
+    meal = mealRecord.objects.filter(user_id=request.user.id).order_by('day').reverse().values() #.reverse()で降順
+    for line in meal:
+        day = line['day']
+        context = {'breakfast':{},'lunch':{},'dinner':{},'snack':{}}
+        times = ['breakfast','lunch','dinner','snack']
+        for time in times:
+            for content in line[time].splitlines():
+                context[time].update({content.split(',')[0]:content.split(',')[1]})
+        contexts.update({day:context})
+    return render(request, 'list.html', {'list':contexts})
+
 def accountfunc(request):
     return render(request, 'account.html')

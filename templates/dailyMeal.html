@@ -33,8 +33,20 @@
     }
 </script>
 <h1>{{day}}の食材記録</h1>
-<a href="{% url 'logout' %}">logout</a>
 <div class="container">
+    <form action="{% url 'list' %}" method="post">{% csrf_token %}
+    <div class="row">
+        <div class="col">
+            <button onclick="history.back()">キャンセル</button>
+        </div>
+        <div class="col">
+            <input type="hidden" name="update" value="1">
+            <button type="submit">保存</a>
+        </div>
+        <!-- <div class="col">
+            <a href="{% url 'logout' %}">ログアウト</a>
+        </div> -->
+    </div>
     <div class="row">
         <div class="col">
             {% for time,detail in recipe.items %}
@@ -285,6 +297,7 @@
     <div class="row">
         <button type="submit" class="btn btn-primary">AIレシピ提案</button>
     </div>
+</form>
 </div>
 
 {% endblock %}

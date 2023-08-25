@@ -1,14 +1,10 @@
 from django.contrib import admin
-from .models import NutritionFacts
+from .models import NutritionFacts, mealRecord
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.formats import base_formats
 
 # Register your models here.
-# admin.site.unregister(NutritionFacts)
-# admin.site.register(NutritionFacts)
-
-
 class NutritionFactsResource(resources.ModelResource):
     class Meta:
         model = NutritionFacts
@@ -28,7 +24,6 @@ class NutritionFactsResource(resources.ModelResource):
                   'alcohol', 'salt', 'note')
         import_id_fields = ['id']
 
-# @admin.register(NutritionFacts)
 class NutritionFactsAdmin(ImportExportModelAdmin):
     list_display = ('number', 'classification', 'name', 'disposalRate', 'energyJ', 
                   'energyCal', 'moisture', 'proteinByAminoAcidComposition', 'protein', 
@@ -50,3 +45,9 @@ class NutritionFactsAdmin(ImportExportModelAdmin):
     formats = [base_formats.CSV]
 
 admin.site.register(NutritionFacts, NutritionFactsAdmin)
+
+
+# class mealRcordAdmin(admin.ModelAdmin):
+#     list_display = ['id', 'user', 'day', 'breakfast', 'lunch', 'dinner', 'snack']
+# admin.site.register(mealRecord, mealRcordAdmin)
+admin.site.register(mealRecord)

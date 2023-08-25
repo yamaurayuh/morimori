@@ -15,14 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import displayDailyIngredientRecordFunc, accountfunc, indexfunc, signupfunc, loginfunc, logoutfunc
+from .views import dailyFunc, accountfunc, indexfunc, signupfunc, loginfunc, logoutfunc, listFunc
 
 # app_name= 'userManagement'
 urlpatterns = [
     path('index/', indexfunc, name='index'),
     path('signup/', signupfunc, name='signup'),
     path('login/', loginfunc, name='login'),
-    path('daily/', displayDailyIngredientRecordFunc, name='daily'),
+    path('daily/<int:pk>', dailyFunc, name='daily'),
+    path('daily/', dailyFunc, name='daily'),
     path('account/', accountfunc, name='account'),
     path('logout/', logoutfunc, name='logout'),
+    path('list/', listFunc, name='list')
 ]
